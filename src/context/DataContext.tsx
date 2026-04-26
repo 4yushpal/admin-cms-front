@@ -151,23 +151,37 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
   const refresh = useCallback(async () => {
     setIsLoading(true);
     try {
-      const [s, a, m, g, p] = await Promise.all([
+      // Public endpoints – always fetch
+      const [s, g, p] = await Promise.all([
         servicesApi.getAll(true),
-        adminsApi.getAll(),
-        messagesApi.getAll(),
         galleryApi.getAll(),
         pagesApi.getAll(),
       ]);
       setServices(s);
-      setAdmins(a);
-      setMessages(m);
       setGalleryImages(g);
       setPageContent(p);
       setIsApiConnected(true);
-      saveCache({ services: s, admins: a, messages: m, gallery: g, pages: p });
+      saveCache({ services: s, gallery: g, pages: p });
+
+      // Protected endpoints – only fetch when logged in
+      const token = localStorage.getItem('uhs_admin_token');
+      if (token) {
+        try {
+          const [a, m] = await Promise.all([
+            adminsApi.getAll(),
+            messagesApi.getAll(),
+          ]);
+          setAdmins(a);
+          setMessages(m);
+          saveCache({ admins: a, messages: m });
+        } catch {
+          // Token may be expired – protected data stays cached
+          console.warn('Protected endpoints returned an error. Token may be expired.');
+        }
+      }
     } catch {
       // API not reachable – use cache or fallback, but warn
-      console.warn('Backend API not reachable. Using cached/fallback data. Please run: cd backend && npm run dev');
+      console.warn('Backend API not reachable. Using cached/fallback data.');
       setIsApiConnected(false);
     } finally {
       setIsLoading(false);
