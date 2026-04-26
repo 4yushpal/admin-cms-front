@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import { adminsApi } from '../../services/api';
 
 export default function AdminLogin() {
   const [email, setEmail] = useState('');
@@ -16,20 +17,7 @@ export default function AdminLogin() {
     setLoading(true);
 
     try {
-      const response = await fetch('http://localhost:5000/api/admins/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email, password }),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || 'Login failed');
-      }
-
+      const data = await adminsApi.login({ email, password });
       login(data.token, data.admin);
       navigate('/admin');
     } catch (err: any) {
