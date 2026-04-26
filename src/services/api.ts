@@ -38,6 +38,7 @@ export const adminsApi = {
   create: (data: any) => request<any>('/admins', { method: 'POST', body: JSON.stringify(data) }),
   update: (id: number, data: any) => request<any>(`/admins/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
   delete: (id: number) => request<any>(`/admins/${id}`, { method: 'DELETE' }),
+  login: (data: any) => request<any>('/admins/login', { method: 'POST', body: JSON.stringify(data) }),
 };
 
 // Messages
