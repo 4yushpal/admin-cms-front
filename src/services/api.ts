@@ -1,4 +1,4 @@
-const BASE_URL = import.meta.env.VITE_API_URL || 'https://admin-cms-back.onrender.com';
+const BASE_URL = import.meta.env.VITE_API_URL || 'https://admin-cms-back.onrender.com/api';
 
 async function request<T>(endpoint: string, options?: RequestInit): Promise<T> {
   const token = localStorage.getItem('uhs_admin_token');
